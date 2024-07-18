@@ -1,0 +1,27 @@
+version: "1.0"
+
+services:
+  automated_docking:
+    image: automated_docking
+    build: .
+    container_name: automated_docking
+    deploy:
+      restart_policy:
+        condition: unless-stopped
+    runtime: nvidia
+    ports:
+      - "7085:7085"
+    stdin_open: true
+    tty: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    healthcheck:
+      test: ["CMD-SHELL", "nvidia-smi || exit 1"]
+      intenvcrval: 24h
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+#use docker compose up --build to build the image and run the container for debugging
+
+#if you want to run the container in the background use:
+# docker compose up -d

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Automated Docking Pipeline</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold mb-6">Automated Docking Pipeline</h1>
+        <div class="mb-6">
+            <details class="border border-gray-300 rounded p-4 w-1/2">
+                <summary class="font-bold">Please upload sdf and pdb files</summary>
+                <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">Instructions: You can upload multiple pdb files and multiple sdf files containing either one or mutliple ligands in 3D to perform docking with it. You can get 3D sdf files for e.g. from Pubchem. By selecting GPU Vina you can boost the docking process (currently not available). Selecting either metal containing or NADP cofactor is trying to identify the NADP or Metal and generating a docking Box around it in all pdb's, if you select one of these you don't need to provide center coordinates. Usign align, all your pdbs are going to be aligned before the docking. Selecting fixed torsion sets the torsion angle of your susbtrate to fixed which comes in handy when having aromatic planar ligands. 
+                    Please, be aware that when docking multiple pdbs and sdf it might take a while for the uploade. In this case just wait. 
+                </p>
+                <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">
+                    <ul> 
+                      <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ Where can I find my center coordinates? Open PyMOL and select an atom in the active site: enter <code>print(cmd.get_coords('sele'))</code> into the command line.</li>
+                      <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ How to get a sdf file? Pubchem by downloading the 3D sdf file or e.g. ChemDraw, draw molecule, select and Get 3D Model under Edit or by copying to Chem3D. Then save as .sdf file (V3000)</li>
+                      <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ How does the align work? Alignment is done on the first pdb structure (alphabetically). Add a 1_ as prefix to the file name to use it as reference.</li>
+                    </ul> 
+                  </p>
+                <p class="mt-4">Example pdb: <a href="/test_data/test.pdb" class="text-blue-500 hover:underline">test.pdb</a></p>
+                <p class="mt-4">Example sdf: <a href="/test_data/ligands3D.sdf" class="text-blue-500 hover:underline">ligands3D.sdf</a></p>
+            </details>
+        </div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="file" class="block font-bold mb-2" title="Choose the SDF and PDB files to upload">Select Files:</label>
+                <input type="file" id="file" name="file" multiple class="border border-gray-300 rounded p-2 w-1/2">
+            </div>
+
+            <div class="mb-4">
+                <label for="gpu_vina" class="inline-flex items-center" title="Enable GPU acceleration for docking.">
+                    <input type="checkbox" id="gpu_vina" name="gpu_vina" class="form-checkbox">
+                    <span class="ml-2">GPU Vina</span>
+                </label>
+            </div>
+            
+            <div class="mb-4">
+                <label for="align" class="inline-flex items-center" title="Perform alignment before docking">
+                    <input type="checkbox" id="align" name="align" class="form-checkbox">
+                    <span class="ml-2">Align</span>
+                </label>
+            </div>
+
+            <div class="mb-4">
+                <label for="fixed_torsion" class="inline-flex items-center" title="Fix the torsion angle during docking">
+                    <input type="checkbox" id="fixed_torsion" name="fixed_torsion" class="form-checkbox">
+                    <span class="ml-2">Fixed Torsion</span>
+                </label>
+            </div>
+
+            <div class="mb-4">
+                <label for="output_format" class="block font-bold mb-2" title="Select the desired output format for the results">Output Format:</label>
+                <select id="output_format" name="output_format" class="border border-gray-300 rounded p-2 w-1/2">
+                    <option value="pdbqt">pdbqt</option>
+                    <option value="pdb">pdb</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="center" class="block font-bold mb-2" title="Specify the center coordinates for docking if not metal-containing or NADP cofactor selected. Get coords by using pymol and print(cmd.get_coords('sele'))">Center:</label>
+                <input type="text" id="center" name="center" placeholder="e.g. 40.5 -20.6 30.8" class="border border-gray-300 rounded p-2 w-1/2" onchange="handleOptionChange('center')">
+            </div>
+            <div class="mb-4">
+                <label for="NADP_cofactor" class="inline-flex items-center" title="Identify NADP cofactor and set the Hydrid as center for docking">
+                    <input type="checkbox" id="NADP_cofactor" name="NADP_cofactor" class="form-checkbox" onchange="handleOptionChange('NADP_cofactor')">
+                    <span class="ml-2">NADP Cofactor</span>
+                </label>
+            </div>
+
+            <div class="mb-4">
+                <label for="metal_containing" class="inline-flex items-center" title="Identify metal-ion and set it as center for docking">
+                    <input type="checkbox" id="metal_containing" name="metal_containing" class="form-checkbox" onchange="handleOptionChange('metal_containing')">
+                    <span class="ml-2">Metal Containing</span>
+                </label>
+            </div>
+            
+
+            <div class="mb-4">
+                <label for="size" class="block font-bold mb-2" title="Set the dimensions of the docking box. Default 10 10 10">Box Size:</label>
+                <input type="text" id="size" name="size" placeholder="15 15 15" class="border border-gray-300 rounded p-2 w-1/2">
+            </div>
+
+            <div class="mb-4">
+                <label for="num_modes" class="block font-bold mb-2" title="Define the number of docking modes to generate">Number of Modes:</label>
+                <input type="text" id="num_modes" name="num_modes" placeholder="9" class="border border-gray-300 rounded p-2 w-1/2">
+            </div>
+
+            <div class="mb-4">
+                <label for="exhaustiveness" class="block font-bold mb-2" title="Adjust the exhaustiveness of the docking search">Exhaustiveness:</label>
+                <input type="text" id="exhaustiveness" name="exhaustiveness" placeholder="8" class="border border-gray-300 rounded p-2 w-1/2">
+            </div>
+
+            <div class="mb-4">
+                <label for="energy_range" class="block font-bold mb-2" title="Set the energy range for docking scoring">Energy Range:</label>
+                <input type="text" id="energy_range" name="energy_range" placeholder="3" class="border border-gray-300 rounded p-2 w-1/2">
+            </div>
+            <div class="mb-4">
+                <input type="submit" value="Upload & Submit" class="btn btn-primary px-6 py-2 bg-blue-500 text-white font-bold rounded cursor-pointer transition duration-300 hover:bg-blue-600" title="Submit the selected files for processing">
+            </div>  
+        </form>
+    </div>
+    <script>
+        function handleOptionChange(option) {
+            if (option === 'NADP_cofactor') {
+                document.getElementById('metal_containing').checked = false;
+                document.getElementById('center').value = '';
+            } else if (option === 'metal_containing') {
+                document.getElementById('NADP_cofactor').checked = false;
+                document.getElementById('center').value = '';
+            } else if (option === 'center') {
+                document.getElementById('NADP_cofactor').checked = false;
+                document.getElementById('metal_containing').checked = false;
+            }
+        }
+    </script>
+</body>
+</html>

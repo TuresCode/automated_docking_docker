@@ -1,0 +1,7 @@
+matplotlib
+flask
+biopandas
+natsort
+tqdm
+openpyxl
+ipython

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Automated docking submitted</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">Your automated docking has been submitted</h1>
+        <p class="mb-2">Status: Running...</p>
+        <p class="mb-2">Your task ID: {{ task_id }}</p>
+        <p class="mb-4">Your download link: <a href="{{ download_link }}" class="text-blue-500 hover:underline">{{ download_link }}</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Downloads</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+
+    <meta http-equiv="refresh" content="20">
+    <style>
+            /* Adjust the progress bar styles as needed */
+            .progress-bar {
+                width: 100%;
+                height: 20px;
+                border-radius: 4px;
+                background-color: #e5e7eb;
+            }
+            
+            .progress-bar-fill {
+                height: 100%;
+                border-radius: 4px;
+                background-color: #10b981;
+            }
+    </style>
+
+</head>
+
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">Downloads</h1>
+        {% if files %}
+            <ul class="list-disc pl-4">
+                {% for file in files %}
+                    <li><a href="{{ url_for('download_file', task_id=task_id, filename=file) }}" class="text-blue-500 hover:underline">{{ file }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500">The process is still running. Please check back later or refresh this page.</p>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" style="width: {{ progress_percentage }}%"></div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="fixed top-8 right-8">
+        <a href="http://ccbio:8085" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-lg">
+            Back to Home
+        </a>
+    </div>
+</body>
+</html>

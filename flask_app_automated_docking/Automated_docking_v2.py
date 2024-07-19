@@ -729,7 +729,7 @@ def vina_docking(lig, file_name, receptor_v, center_v):
         file_name = working_dir + "/" + file_name
         lig = working_dir + "/" + lig
         receptor_v = working_dir + "/" + receptor_v
-        vina_docking = f"/flask_server/vina_gpu/QuickVina2-GPU/QuickVina2-GPU --thread 8000 --receptor {receptor_v} --ligand {lig} {second_ligand} --seed 42 --center_x {center_x} --center_y {center_y} --center_z {center_z} --out {file_name}_out.{config.output_formate} --size_x {size_x} --size_y {size_y} --size_z {size_z} --num_modes {config.num_modes} --energy_range {config.energy_range}"
+        vina_docking = f"/flask_server/QuickVina2-GPU/QuickVina2-GPU --thread 8000 --receptor {receptor_v} --ligand {lig} {second_ligand} --seed 42 --center_x {center_x} --center_y {center_y} --center_z {center_z} --out {file_name}_out.{config.output_formate} --size_x {size_x} --size_y {size_y} --size_z {size_z} --num_modes {config.num_modes} --energy_range {config.energy_range}"
 
     else:
         # check if lig is present
@@ -793,7 +793,7 @@ def virtual_screen(receptor, center):
     )  # preparing receptor as list for zipping
     center_v = [center] * len(lig)  # preparing center as list for zipping
     if config.gpu_vina:
-        os.chdir("/flask_server/vina_gpu/QuickVina2-GPU")
+        os.chdir("/flask_server/QuickVina2-GPU")
 
     if len(lig) > len(config.receptors):
         print("more ligands than receptors")

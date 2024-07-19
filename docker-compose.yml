@@ -16,11 +16,11 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     healthcheck:
-      test: ["CMD-SHELL", "nvidia-smi || exit 1"]
-      intenvcrval: 24h
+      test: ["CMD", "nvidia-smi", "|", "grep", "-q", "Failed to initialize NVML: Unknown Error", "&&", "exit", "1", "||", "exit", "0"]
+      interval: 24h
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 5s
 #use docker compose up --build to build the image and run the container for debugging
 
 #if you want to run the container in the background use:

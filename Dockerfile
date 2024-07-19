@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.0.1-base-ubuntu20.04
+FROM tensorflow/tensorflow
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     vim \
     nano \
+    libboost-all-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
     expect \
@@ -24,13 +25,18 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /flask_server
 COPY /flask_app_automated_docking .
 
+#install boost library
 RUN ulimit -s 8192
 RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz
-RUN tar -xzf boost_1_77_0.tar.gz 
-# RUN cd boost_1_77_0
-# RUN ./bootstrap.sh
-# RUN ./b2
-# RUN ./b2 install
+RUN tar -xzf boost_1_77_0.tar.gz
+RUN chmod a+x boost_1_77_0/bootstrap.sh
+RUN ./boost_1_77_0/bootstrap.sh
+#setting up opencl and paths
+RUN export CPLUS_INCLUDE_PATH=/flask_server/boost_1_77_0:$CPLUS_INCLUDE_PATH
+RUN echo 'export LD_LIBRARY_PATH=/flask_server/boost_1_77_0/stage/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+RUN export LD_LIBRARY_PATH=/flask_server/boost_1_77_0/stage/lib:$LD_LIBRARY_PATH
+RUN apt-get update && apt-get install nvidia-opencl-dev -y
+
 
 
 RUN cd /flask_server
@@ -92,20 +98,21 @@ RUN ls -l /flask_server/ADFRsuite_x86_64Linux_1.0 && \
 
 # Clean up
 RUN rm /tmp/ADFRsuite_Linux-x86_64_1.0_install /tmp/install_adfrsuite.exp
-
 RUN rm -rf /flask_server/Y
 
 #Vina
 RUN wget https://github.com/ccsb-scripps/AutoDock-Vina/releases/download/v1.2.3/vina_1.2.3_linux_x86_64
 RUN chmod a+x vina_1.2.3_linux_x86_64
 
-# Clone QuickVina2-GPU
-RUN git clone https://github.com/DeltaGroupNJUPT/QuickVina2-GPU.git
+# Clone QuickVina2-GPU and install
+RUN git clone https://github.com/DeltaGroupNJUPT/QuickVina2-GPU.git \
+    && cd QuickVina2-GPU \
+    && make clean \
+    && make source \
+    && cd ..
 
 
 WORKDIR /flask_server
-
-
 
 # Set the entrypoint to execute the script
 ENTRYPOINT ["/flask_server/entrypoint_new.sh", "/bin/bash"]

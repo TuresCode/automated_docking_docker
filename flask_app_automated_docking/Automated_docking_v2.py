@@ -1092,6 +1092,16 @@ def pymol_selection_pdbs():
         len(all_pdb), " pdbs selected by pymol and original moved to orignal_pdb folder"
     )
 
+def convert_pdbqt_to_mol2(file):
+    """convert pdbqt file to mol2 file"""
+    pdbqt_to_mol2 = f"obabel {file} -O {file[:-6]}.mol2"
+    ps = subprocess.Popen(
+        pdbqt_to_mol2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    stdout, stderr = ps.communicate()
+    if stderr != None:
+        print(stderr)
+    return
 
 # main function for docking start all
 start = time.time()
@@ -1208,6 +1218,10 @@ if not os.path.exists(result_path):
             os.makedirs(destination)
         df.to_excel(os.path.join(destination, "Overview_binding_affinity.xlsx"))
         print("GPU Vina used data differently summarized. Check Data")
+        #convert pdbqt files to mol2
+        pdbqt_files = glob.glob("Results/*.pdbqt", recursive=True)
+        for file in pdbqt_files:
+            convert_pdbqt_to_mol2(file)
 
     else:
         df_xlsx = summarize_results(res1, substances_db)

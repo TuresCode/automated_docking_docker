@@ -979,6 +979,19 @@ def gpu_vina_summarize():
                             ignore_index=True,
                         )
                         count += 1
+        # Destination path create summary folder which harbors all the results summarized
+    path = os.getcwd()
+    destination = os.path.join(config.result_path + "/", "Results_summary")
+
+    # move pdb files which end with aligned.pdb or pymol.pdb to results_summary folder
+    if not os.path.exists(destination):
+        os.makedirs(destination)
+
+    for file in os.listdir(path):
+        if file.endswith("aligned.pdb") or file.endswith("pymol.pdb"):
+            shutil.move(file, config.result_path + "/")
+        if file.endswith(".txt"):
+            shutil.move(file, config.result_path + "/")
     return df_log
 
 
@@ -1092,6 +1105,7 @@ def pymol_selection_pdbs():
         len(all_pdb), " pdbs selected by pymol and original moved to orignal_pdb folder"
     )
 
+
 def convert_pdbqt_to_mol2(file):
     """convert pdbqt file to mol2 file"""
     pdbqt_to_mol2 = f"obabel {file} -O {file[:-6]}.mol2"
@@ -1102,6 +1116,7 @@ def convert_pdbqt_to_mol2(file):
     if stderr != None:
         print(stderr)
     return
+
 
 # main function for docking start all
 start = time.time()
@@ -1218,8 +1233,8 @@ if not os.path.exists(result_path):
             os.makedirs(destination)
         df.to_excel(os.path.join(destination, "Overview_binding_affinity.xlsx"))
         print("GPU Vina used data differently summarized. Check Data")
-        #convert pdbqt files to mol2
-        pdbqt_files = glob.glob("Results/*.pdbqt", recursive=True)
+        # convert pdbqt files to mol2
+        pdbqt_files = glob.glob("Results/**/*.pdbqt", recursive=True)
         for file in pdbqt_files:
             convert_pdbqt_to_mol2(file)
 

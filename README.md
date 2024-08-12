@@ -17,3 +17,5 @@ docker run -d --restart unless-stopped -it --gpus all -p 7085:7085 automated_doc
 
 Enter the docker using:
 docker exec -it docker_name /bin/bash
+
+If the docker doesn't have access to the gpu after a while. Try to make a symlink as described here: https://stackoverflow.com/questions/72932940/failed-to-initialize-nvml-unknown-error-in-docker-after-few-hours

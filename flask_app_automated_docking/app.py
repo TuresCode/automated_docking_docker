@@ -275,7 +275,8 @@ def task_status():
         task_queue = load_task_queue("task_queue.pkl")
     except FileNotFoundError:
         task_queue = {}
-    return jsonify({"status": task_queue})
+    # return jsonify({"status": task_queue})
+    return render_template('status_queue.html', task_queue=task_queue)
 
 
 @app.route("/download/<task_id>")
@@ -317,7 +318,7 @@ def download(task_id):
             if task_queue[task_id]["status"] == "completed" and len(files) == 0:
                 return jsonify(
                     {
-                        "status": "Something went wrong. E.g no metal found. Wrong sdf etc etc. Please try again."
+                        "status": "Something went wrong. E.g no metal found. Wrong sdf etc etc. Please read the Manual correct your input and try again."
                     }
                 )
             return render_template(

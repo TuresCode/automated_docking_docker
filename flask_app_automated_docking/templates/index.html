@@ -11,18 +11,20 @@
         <div class="mb-6">
             <details class="border border-gray-300 rounded p-4 w-1/2">
                 <summary class="font-bold">Please upload sdf and pdb files</summary>
-                <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">Instructions: You can upload multiple pdb files and multiple sdf files containing either one or mutliple ligands in 3D to perform docking with it. You can get 3D sdf files for e.g. from Pubchem. By selecting GPU Vina you can boost the docking process (currently not available). Selecting either metal containing or NADP cofactor is trying to identify the NADP or Metal and generating a docking Box around it in all pdb's, if you select one of these you don't need to provide center coordinates. Usign align, all your pdbs are going to be aligned before the docking. Selecting fixed torsion sets the torsion angle of your susbtrate to fixed which comes in handy when having aromatic planar ligands. 
+                <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">Instructions: You can upload multiple pdb files and multiple sdf files containing either one or mutliple ligands (make sure to change the name in the sdf file. Generate multi-sdf with for e.g. obabel: <a href="https://sourceforge.net/projects/openbabel/" class="text-blue-500 hover:underline">https://sourceforge.net/projects/openbabel/</a> ) in 3D to perform docking with it. 
+                    You can get 3D sdf files for e.g. from Pubchem. By selecting GPU Vina you can boost the docking process (multiple sdf files are not supported here but multiple pdbs). Selecting either metal containing or NADP cofactor is trying to identify the NADP or Metal and generating a docking Box around it in all pdb's, if you select one of these you don't need to provide center coordinates. Usign align, all your pdbs are going to be aligned before the docking. Selecting fixed torsion sets the torsion angle of your susbtrate to fixed which comes in handy when having aromatic planar ligands. 
                     Please, be aware that when docking multiple pdbs and sdf it might take a while for the uploade. In this case just wait. 
                 </p>
                 <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">
                     <ul> 
                       <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ Where can I find my center coordinates? Open PyMOL and select an atom in the active site: enter <code>print(cmd.get_coords('sele'))</code> into the command line.</li>
-                      <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ How to get a sdf file? Pubchem by downloading the 3D sdf file or e.g. ChemDraw, draw molecule, select and Get 3D Model under Edit or by copying to Chem3D. Then save as .sdf file (V3000)</li>
+                      <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ How to get a sdf file? Pubchem by downloading the 3D sdf file or e.g. ChemDraw, draw molecule, select and Get 3D Model under Edit or by copying to Chem3D. Then save as .sdf file (V3000). Open in editor and change the name from Fragment to the real one</li>
                       <li class="mt-4 text-sm text-gray-500 mt-2w-1/2">■ How does the align work? Alignment is done on the first pdb structure (alphabetically). Add a 1_ as prefix to the file name to use it as reference.</li>
                     </ul> 
                   </p>
                 <p class="mt-4">Example pdb: <a href="/test_data/test.pdb" class="text-blue-500 hover:underline">test.pdb</a></p>
                 <p class="mt-4">Example sdf: <a href="/test_data/ligands3D.sdf" class="text-blue-500 hover:underline">ligands3D.sdf</a></p>
+                <p class="mt-4"><a href="http://ccbio:7085/status" class="bg-gray-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-lg">Check running jobs</a></p>
             </details>
         </div>
         <form action="/upload" method="post" enctype="multipart/form-data">
@@ -34,7 +36,7 @@
             <div class="mb-4">
                 <label for="gpu_vina" class="inline-flex items-center" title="Enable GPU acceleration for docking.">
                     <input type="checkbox" id="gpu_vina" name="gpu_vina" class="form-checkbox">
-                    <span class="ml-2">GPU Vina</span>
+                    <span class="ml-2">GPU Vina (only for multi pdbs vs one sdf)</span>
                 </label>
             </div>
             

@@ -45,7 +45,7 @@ def check_and_rename_lig_name(file_list):
             first_row = file.readline().strip()
             
             if first_row.startswith('Fragment'):
-                new_first_row = f"{os.path.basename(file_path)}"
+                new_first_row = f"{os.path.basename(file_path).split('.')[0]}"
                 file.seek(0)
                 lines = file.readlines()
                 

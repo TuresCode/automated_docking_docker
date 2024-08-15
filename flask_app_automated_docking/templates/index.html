@@ -12,8 +12,8 @@
             <details class="border border-gray-300 rounded p-4 w-1/2">
                 <summary class="font-bold">Please upload sdf and pdb files</summary>
                 <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">Instructions: You can upload multiple pdb files and multiple sdf files containing either one or mutliple ligands (make sure to change the name in the sdf file. Generate multi-sdf with for e.g. obabel: <a href="https://sourceforge.net/projects/openbabel/" class="text-blue-500 hover:underline">https://sourceforge.net/projects/openbabel/</a> ) in 3D to perform docking with it. 
-                    You can get 3D sdf files for e.g. from Pubchem. By selecting GPU Vina you can boost the docking process (multiple sdf files are not supported here but multiple pdbs). Selecting either metal containing or NADP cofactor is trying to identify the NADP or Metal and generating a docking Box around it in all pdb's, if you select one of these you don't need to provide center coordinates. Usign align, all your pdbs are going to be aligned before the docking. Selecting fixed torsion sets the torsion angle of your susbtrate to fixed which comes in handy when having aromatic planar ligands. 
-                    Please, be aware that when docking multiple pdbs and sdf it might take a while for the uploade. In this case just wait. 
+                    You can get 3D sdf files for e.g. from Pubchem. By selecting GPU Vina you can boost the docking process. Selecting either metal containing or NADP cofactor is trying to identify the NADP or Metal and generating a docking Box around it in all pdb's, if you select one of these you don't need to provide center coordinates. Usign align, all your pdbs are going to be aligned before the docking. Selecting fixed torsion sets the torsion angle of your susbtrate to fixed which comes in handy when having aromatic planar ligands. 
+                    Please, be aware that when docking multiple pdbs and sdf the upload needs some time. In this case just wait. The time needed varies based on the parameter but can be expected to be 10-35 seconds per pdb and sdf (with gpu).
                 </p>
                 <p class="mt-4 text-sm text-gray-500 mt-2w-1/2">
                     <ul> 
@@ -36,7 +36,7 @@
             <div class="mb-4">
                 <label for="gpu_vina" class="inline-flex items-center" title="Enable GPU acceleration for docking.">
                     <input type="checkbox" id="gpu_vina" name="gpu_vina" class="form-checkbox">
-                    <span class="ml-2">GPU Vina (only for multi pdbs vs one sdf)</span>
+                    <span class="ml-2">GPU Vina</span>
                 </label>
             </div>
             

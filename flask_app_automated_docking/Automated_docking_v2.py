@@ -202,9 +202,7 @@ try:
         file
         for file in os.listdir(working_dir)
         if file.endswith(".smiles") or file.endswith(".sdf")
-    ][
-        0
-    ]  # file containing all ligands as smiles or sdf file
+    ][0] # first file containing all ligands as smiles or sdf file
     print(".smiles or .sdf file detected namely: ", ligand_files)
 except:
     ligand_files = ""
@@ -550,13 +548,13 @@ def analyse_affinities_all(receptor, rec_path, rec_sub_path, df_all):
                 rec_path, file[:-8] + "_out." + config.output_formate
             )
 
-            df_energies["ligand_names"] = parts[-1]
+            # df_energies["ligand_names"] = parts[-1]
+            df["ligand_name"] = df["res_out"].apply(lambda x: x.split("/")[-1].replace(x.split("/")[-2] + "_", "")[:-10])
             # split of log file using underline but ligand defined with underline as well
-
             df_energies["Enzyme_group"] = parts[0]
             df_energies["Log_files"] = file
             df_energies["res_path"] = rec_sub_path
-            df_energies["Enzyme_ligand"] = parts[0] + "_" + parts[-3]
+            df_energies["Enzyme_ligand"] = df_energies["Enzyme_group"] + "_" + df["ligand_name"]
 
             f.close()
 
@@ -729,7 +727,9 @@ def vina_docking(lig, file_name, receptor_v, center_v):
         file_name = working_dir + "/" + file_name
         lig = working_dir + "/" + lig
         receptor_v = working_dir + "/" + receptor_v
+        os.chdir("/flask_server/QuickVina2-GPU")
         vina_docking = f"/flask_server/QuickVina2-GPU/QuickVina2-GPU --thread 8000 --receptor {receptor_v} --ligand {lig} {second_ligand} --seed 42 --center_x {center_x} --center_y {center_y} --center_z {center_z} --out {file_name}_out.{config.output_formate} --size_x {size_x} --size_y {size_y} --size_z {size_z} --num_modes {config.num_modes} --energy_range {config.energy_range}"
+        print(vina_docking)
 
     else:
         # check if lig is present
@@ -792,10 +792,10 @@ def virtual_screen(receptor, center):
         lig
     )  # preparing receptor as list for zipping
     center_v = [center] * len(lig)  # preparing center as list for zipping
-    if config.gpu_vina:
-        os.chdir("/flask_server/QuickVina2-GPU")
+    # if config.gpu_vina:
+    #     os.chdir("/flask_server/QuickVina2-GPU")
 
-    if len(lig) > len(config.receptors):
+    if len(lig) > len(config.receptors) and not config.gpu_vina:
         print("more ligands than receptors")
         processes = int(50 / config.exhaustiveness)
         if processes == 0:
@@ -808,13 +808,13 @@ def virtual_screen(receptor, center):
             )  # tqdm and total = len(lig) for progressbar
 
     else:
-        print("more receptors than ligands")
+        print("more receptors than ligands or GPU mode")
 
         for i in range(len(lig)):
             vina_docking(lig[i], fn[i], receptor_v[i], center_v[i])
 
-    if config.gpu_vina:
-        os.chdir(working_dir)
+    # if config.gpu_vina:
+    #     os.chdir(working_dir)
 
     df = pd.DataFrame()
     if config.gpu_vina:
@@ -970,7 +970,7 @@ def gpu_vina_summarize():
                         df_log = df_log.append(
                             {
                                 "variant": log_file.split("/")[-2],
-                                "ligand": log_file.split("/")[-1].split("_")[-2],
+                                "ligand": log_file.split("/")[-1].replace(log_file.split("/")[-2] + "_", "")[:-8],
                                 "state": state,
                                 "affinity": affinity,
                                 "vina_rmsd_lb": vina_rmsd_lb,
@@ -1145,7 +1145,7 @@ if ligand_files.endswith(".smiles"):
     substances_db = "ligands3D.sdf"
 if ligand_files.endswith(".sdf"):
     print(
-        "sdf file conversion function experimental. Make sure file is named ligands3D.sdf contains all ligands and the ligand names are given"
+        "sdf files conversion function experimental. Make sure file is named ligands3D.sdf contains all ligands and the ligand names are given"
     )
     substances_db = "ligands3D.sdf"
     print(substances_db)

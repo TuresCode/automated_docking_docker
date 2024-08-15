@@ -37,6 +37,31 @@ def load_task_queue(filename):
         task_queue = pickle.load(file)
     return task_queue
 
+def check_and_rename_lig_name(file_list):
+    first_rows = {}
+    duplicate_count = 1
+
+    for file_path in file_list:
+        with open(file_path, 'r') as file:
+            first_row = file.readline().strip()
+            
+            if first_row.startswith('Fragment') or first_row in first_rows:
+                new_first_row = f"lig{duplicate_count}"
+                duplicate_count += 1
+                file.seek(0)
+                lines = file.readlines()
+                
+                # Replace the first line
+                lines[0] = new_first_row + '\n'
+                
+                # Write the modified content back to the file
+                with open(file_path, 'w') as f:
+                    f.writelines(lines)
+                
+                print(f"Renamed first row in {file_path} to {new_first_row}")
+            else:
+                first_rows[first_row] = file_path
+
 
 class config:
     def __init__(
@@ -152,6 +177,7 @@ def upload():
         os.rename(original_path, new_path)
         print("Renamed .sdf file to ligands3D.sdf")
     if len(sdf_files) > 1:
+        check_and_rename_lig_name([os.path.join(task_folder, file) for file in sdf_files])
         files_path = [os.path.join(task_folder, file) for file in sdf_files]
         lig3D_file_path = os.path.join(task_folder, "ligands3D.sdf")
         files_string = ""

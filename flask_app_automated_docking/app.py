@@ -38,14 +38,15 @@ def load_task_queue(filename):
     return task_queue
 
 def check_and_rename_lig_name(file_list):
-
+    first_rows = {}
+    duplicate_count = 1
 
     for file_path in file_list:
         with open(file_path, 'r') as file:
             first_row = file.readline().strip()
             
-            if first_row.startswith('Fragment'):
-                new_first_row = f"{os.path.basename(file_path).split('.')[0]}"
+            if first_row.startswith('Fragment') or first_row in first_rows:
+                new_first_row = f"lig{duplicate_count}"
                 file.seek(0)
                 lines = file.readlines()
                 
@@ -57,6 +58,8 @@ def check_and_rename_lig_name(file_list):
                     f.writelines(lines)
                 
                 print(f"Renamed first row in {file_path} to {new_first_row}")
+            else:
+                first_rows[first_row] = file_path
 
 
 class config:

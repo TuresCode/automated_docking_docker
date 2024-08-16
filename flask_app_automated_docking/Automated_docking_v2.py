@@ -549,12 +549,12 @@ def analyse_affinities_all(receptor, rec_path, rec_sub_path, df_all):
             )
 
             # df_energies["ligand_names"] = parts[-1]
-            df["ligand_name"] = df["res_out"].apply(lambda x: x.split("/")[-1].replace(x.split("/")[-2] + "_", "")[:-10])
+            df_energies["ligand_name"] = df_energies["res_out"].apply(lambda x: x.split("/")[-1].replace(x.split("/")[-2] + "_", "")[:-10])
             # split of log file using underline but ligand defined with underline as well
             df_energies["Enzyme_group"] = parts[0]
             df_energies["Log_files"] = file
             df_energies["res_path"] = rec_sub_path
-            df_energies["Enzyme_ligand"] = df_energies["Enzyme_group"] + "_" + df["ligand_name"]
+            df_energies["Enzyme_ligand"] = df_energies["Enzyme_group"] + "_" + df_energies["ligand_name"]
 
             f.close()
 

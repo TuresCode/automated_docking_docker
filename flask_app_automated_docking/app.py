@@ -37,27 +37,24 @@ def load_task_queue(filename):
         task_queue = pickle.load(file)
     return task_queue
 
+
 def check_and_rename_lig_name(file_list):
 
-
     for file_path in file_list:
-        if file_path.startswith('ligands3D'):
-            pass
-        else:
-            with open(file_path, 'r') as file:
-        
+        with open(file_path, "r") as file:
+            first_row = file.readline().strip()
+            if first_row.startswith("Fragment"):
                 new_first_row = f"{os.path.basename(file_path).split('.')[0]}"
                 file.seek(0)
                 lines = file.readlines()
                 # Replace the first line
-                lines[0] = new_first_row + '\n'
-                
-                # Write the modified content back to the file
-                with open(file_path, 'w') as f:
-                    f.writelines(lines)
-                    
-                    print(f"Renamed first row in {file_path} to {new_first_row}")
+                lines[0] = new_first_row + "\n"
 
+                # Write the modified content back to the file
+                with open(file_path, "w") as f:
+                    f.writelines(lines)
+
+                print(f"Renamed first row in {file_path} to {new_first_row}")
 
 
 class config:
@@ -168,14 +165,18 @@ def upload():
             {"status": "Please select a .sdf file containing all ligands in 3D format"}
         )
     if len(sdf_files) == 1:
-        check_and_rename_lig_name([os.path.join(task_folder, file) for file in sdf_files])
+        check_and_rename_lig_name(
+            [os.path.join(task_folder, file) for file in sdf_files]
+        )
         sdf_file = sdf_files[0]
         original_path = os.path.join(task_folder, sdf_file)
         new_path = os.path.join(task_folder, "ligands3D.sdf")
         os.rename(original_path, new_path)
         print("Renamed .sdf file to ligands3D.sdf")
     if len(sdf_files) > 1:
-        check_and_rename_lig_name([os.path.join(task_folder, file) for file in sdf_files])
+        check_and_rename_lig_name(
+            [os.path.join(task_folder, file) for file in sdf_files]
+        )
         files_path = [os.path.join(task_folder, file) for file in sdf_files]
         lig3D_file_path = os.path.join(task_folder, "ligands3D.sdf")
         files_string = ""
@@ -300,7 +301,7 @@ def task_status():
     except FileNotFoundError:
         task_queue = {}
     # return jsonify({"status": task_queue})
-    return render_template('status_queue.html', task_queue=task_queue)
+    return render_template("status_queue.html", task_queue=task_queue)
 
 
 @app.route("/download/<task_id>")

@@ -41,8 +41,8 @@ def check_and_rename_lig_name(file_list):
 
 
     for file_path in file_list:
-        if file_path.startswith('Ligands3D'):
-            continue
+        if file_path.startswith('ligands3D'):
+            pass
         else:
             with open(file_path, 'r') as file:
         

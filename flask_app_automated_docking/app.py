@@ -38,28 +38,23 @@ def load_task_queue(filename):
     return task_queue
 
 def check_and_rename_lig_name(file_list):
-    first_rows = {}
-    duplicate_count = 1
+
 
     for file_path in file_list:
         with open(file_path, 'r') as file:
-            first_row = file.readline().strip()
+    
+            new_first_row = f"{os.path.basename(file_path).split('.')[0]}"
+            file.seek(0)
+            lines = file.readlines()
+            # Replace the first line
+            lines[0] = new_first_row + '\n'
             
-            if first_row.startswith('Fragment') or first_row in first_rows:
-                new_first_row = f"lig{duplicate_count}"
-                file.seek(0)
-                lines = file.readlines()
-                
-                # Replace the first line
-                lines[0] = new_first_row + '\n'
-                
-                # Write the modified content back to the file
-                with open(file_path, 'w') as f:
-                    f.writelines(lines)
+            # Write the modified content back to the file
+            with open(file_path, 'w') as f:
+                f.writelines(lines)
                 
                 print(f"Renamed first row in {file_path} to {new_first_row}")
-            else:
-                first_rows[first_row] = file_path
+
 
 
 class config:
@@ -170,6 +165,7 @@ def upload():
             {"status": "Please select a .sdf file containing all ligands in 3D format"}
         )
     if len(sdf_files) == 1:
+        check_and_rename_lig_name([os.path.join(task_folder, file) for file in sdf_files])
         sdf_file = sdf_files[0]
         original_path = os.path.join(task_folder, sdf_file)
         new_path = os.path.join(task_folder, "ligands3D.sdf")

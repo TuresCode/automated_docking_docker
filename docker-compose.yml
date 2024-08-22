@@ -16,22 +16,8 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     healthcheck:
-      test:
-        [
-          "CMD",
-          "nvidia-smi",
-          "|",
-          "grep",
-          "-q",
-          "Failed to initialize NVML: Unknown Error",
-          "&&",
-          "exit",
-          "1",
-          "||",
-          "exit",
-          "0",
-        ]
-      interval: 24h
+      test: ["CMD", "nvidia-smi"]
+      interval: 12h
       timeout: 10s
       retries: 3
       start_period: 10s

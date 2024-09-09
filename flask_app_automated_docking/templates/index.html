@@ -24,7 +24,7 @@
                   </p>
                 <p class="mt-4">Example pdb: <a href="/test_data/test.pdb" class="text-blue-500 hover:underline">test.pdb</a></p>
                 <p class="mt-4">Example sdf: <a href="/test_data/ligands3D.sdf" class="text-blue-500 hover:underline">ligands3D.sdf</a></p>
-                <p class="mt-4"><a href="http://ccbio:7085/status" class="bg-gray-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-lg">Check running jobs</a></p>
+                <p class="mt-4"><a href="{{ url_for('status') }}" class="bg-gray-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-lg">Check running jobs</a></p>
             </details>
         </div>
         <form action="/upload" method="post" enctype="multipart/form-data">

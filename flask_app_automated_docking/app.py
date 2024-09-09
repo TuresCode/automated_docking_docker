@@ -286,7 +286,7 @@ def upload():
     session.pop("progress", None)  # Remove the progress from the session once completed
     print({"status": "Running..." + "task_id:" + str(task_id)})
     # Generate the link for the download
-    download_link = "http://ccbio:7085/download/" + str(task_id)
+    download_link = request.host_url +"download/" + str(task_id)
 
     # Render the template with the information and link
     return render_template(
@@ -295,7 +295,7 @@ def upload():
 
 
 @app.route("/status/")
-def task_status():
+def status():
     try:
         task_queue = load_task_queue("task_queue.pkl")
     except FileNotFoundError:
